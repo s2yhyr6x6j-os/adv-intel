@@ -82,9 +82,10 @@
           const textBlock = (data.content || []).find((b) => b.type === "text");
           if (!textBlock) { setError("No response received. Please try again."); return; }
           let clean = textBlock.text.trim();
-          if (clean.startsWith("```")) {
-            clean = clean.replace(/^```[a-z]*/, "").replace(/```$/, "").trim();
-          }
+          const fence = String.fromCharCode(96,96,96);
+          if (clean.startsWith(fence)) {
+  clean = clean.split("\n").filter(function(l) { return !l.startsWith(fence); }).join("\n").trim();
+}
           const parsed = JSON.parse(clean);
           setResult(parsed);
           setActiveTab("letter");
