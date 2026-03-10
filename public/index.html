@@ -82,10 +82,9 @@
           const textBlock = (data.content || []).find((b) => b.type === "text");
           if (!textBlock) { setError("No response received. Please try again."); return; }
           let clean = textBlock.text.trim();
-          const fence = String.fromCharCode(96,96,96);
-          if (clean.startsWith(fence)) {
-  clean = clean.split("\n").filter(function(l) { return !l.startsWith(fence); }).join("\n").trim();
-}
+          const firstBrace = clean.indexOf("{");
+          const lastBrace = clean.lastIndexOf("}");
+          if (firstBrace !== -1 && lastBrace !== -1) { clean = clean.substring(firstBrace, lastBrace + 1); }
           const parsed = JSON.parse(clean);
           setResult(parsed);
           setActiveTab("letter");
