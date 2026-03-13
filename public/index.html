@@ -14,10 +14,13 @@
     body { font-family: "Inter", sans-serif; background: #f0f2f5; min-height: 100vh; }
     textarea::placeholder { color: #b0b8c4; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeTab { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
     .fade-in { animation: fadeIn 0.35s ease; }
+    .tab-panel { animation: fadeTab 0.25s ease; }
     ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: #f0f2f5; } ::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 3px; }
-    input:focus { outline: none; border-color: #1a56db !important; box-shadow: 0 0 0 3px rgba(26,86,219,0.1); }
-    textarea:focus { outline: none; border-color: #1a56db !important; box-shadow: 0 0 0 3px rgba(26,86,219,0.1); }
+    input:focus { outline: none; border-color: #1c5582 !important; box-shadow: 0 0 0 3px rgba(28,85,130,0.1); }
+    textarea:focus { outline: none; border-color: #1c5582 !important; box-shadow: 0 0 0 3px rgba(28,85,130,0.1); }
+    button { transition: all 0.18s ease; }
   </style>
 </head>
 <body>
@@ -26,15 +29,12 @@
     const { useState, useRef, useEffect } = React;
 
     const LOGO_SRC = "data:image/png;base64,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";
-
     const SYSTEM_PROMPT = "You are an expert assistant for Registered Investment Advisors (RIAs). Convert meeting notes into professional compliance-aware documentation. Produce a JSON response with these fields: clientName (extract from notes or use Unknown Client), meetingDate (YYYY-MM-DD format or todays date), clientLetter (warm professional follow-up letter, fiduciary language, sign off as Your Advisory Team), crmNotes (concise internal notes with sentiment and key topics), actionItems (array of objects with task/owner/priority fields where priority is High Medium or Low), complianceFlags (array of strings needing compliance review). Respond ONLY with valid JSON, no markdown, no backticks, no preamble.";
-
     const sampleNotes = "Met with Jim and Carol Hendricks, 45 mins. Worried about market volatility, asked about moving to cash. Reminded them of 15-year horizon and IPS. Q3 performance down 4.2% vs benchmark down 5.1%. Carol expecting $400k inheritance in 6 months. Jim wants to retire in 3 years not 5. Agreed to increase equity from 60% to 65%. Will send updated IPS for signatures. Next review January.";
 
     const BLUE = "#1c5582";
-    const BLUE_LIGHT = "#e8f1f8";
     const BLUE_MID = "#2a6fa0";
-    const NAVY = "#1e3a5f";
+    const BLUE_LIGHT = "#e8f1f8";
     const SUCCESS = "#0d7a3e";
     const SUCCESS_BG = "#f0fdf4";
     const SUCCESS_BORDER = "#86efac";
@@ -55,7 +55,7 @@
     const card = { background: WHITE, borderRadius: "16px", boxShadow: "0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04)", border: "1px solid " + GRAY_200 };
 
     function Badge({ color, bg, children }) {
-      return <span style={{ fontSize: "11px", fontWeight: "600", padding: "3px 9px", borderRadius: "20px", background: bg, color: color, letterSpacing: "0.03em" }}>{children}</span>;
+      return <span style={{ fontSize: "11px", fontWeight: "600", padding: "3px 9px", borderRadius: "20px", background: bg, color: color }}>{children}</span>;
     }
 
     function App() {
@@ -155,26 +155,20 @@
       const processNotes = async () => {
         if (inputMode === "text" && !notes.trim()) return;
         if (inputMode === "image" && !imageData) return;
-        setLoading(true);
-        setError(null);
-        setResult(null);
-        setDriveStatus(null);
-        setDriveLink(null);
+        setLoading(true); setError(null); setResult(null); setDriveStatus(null); setDriveLink(null);
         try {
           const messageContent = inputMode === "image"
             ? [{ type: "image", source: { type: "base64", media_type: imageData.mediaType, data: imageData.base64 } }, { type: "text", text: "These are handwritten meeting notes. Process into the required JSON format." }]
             : "Here are my meeting notes: " + notes;
-
           const resp = await fetch("/api/claude", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1200, system: SYSTEM_PROMPT, messages: [{ role: "user", content: messageContent }] })
           });
-
           const data = await resp.json();
           if (data.error) { setError("API Error: " + data.error.message); return; }
           const textBlock = (data.content || []).find((b) => b.type === "text");
-          if (!textBlock) { setError("No response received. Please try again."); return; }
+          if (!textBlock) { setError("No response received."); return; }
           let clean = textBlock.text.trim();
           const firstBrace = clean.indexOf("{");
           const lastBrace = clean.lastIndexOf("}");
@@ -208,31 +202,27 @@
       return (
         <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #f0f4ff 0%, #f0f2f5 100%)" }}>
 
-          {/* Header */}
           <div style={{ background: WHITE, borderBottom: "1px solid " + GRAY_200, padding: "0 32px", display: "flex", alignItems: "center", justifyContent: "space-between", height: "108px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
             <img src={LOGO_SRC} alt="Advisor Intelligence" style={{ height: "3em", objectFit: "contain" }} />
-            
+            <span style={{ fontSize: "11px", fontWeight: "600", color: BLUE, background: BLUE_LIGHT, padding: "4px 10px", borderRadius: "20px", letterSpacing: "0.05em" }}>PROTOTYPE</span>
           </div>
 
           <div style={{ maxWidth: "860px", margin: "0 auto", padding: "32px 24px" }}>
 
-            {/* Page title */}
             <div style={{ marginBottom: "24px" }}>
               <h1 style={{ fontSize: "22px", fontWeight: "700", color: GRAY_800, marginBottom: "4px" }}>Meeting Notes</h1>
-              <p style={{ fontSize: "14px", color: GRAY_400 }}>Paste your notes or upload a photo — AdvisorFlow generates your documents instantly</p>
+              <p style={{ fontSize: "14px", color: GRAY_400 }}>Paste your notes or upload a photo — AdvisorFLow generates your documents instantly</p>
             </div>
 
-            {/* Input Card */}
             <div style={{ ...card, padding: "24px", marginBottom: "20px" }}>
 
-              {/* Mode toggle */}
               <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
                 {[{ key: "text", icon: "fa-pen-to-square", label: "Typed Notes" }, { key: "image", icon: "fa-camera", label: "Upload Photo" }].map((m) => (
-                  <button key={m.key} onClick={() => setInputMode(m.key)} style={{ padding: "8px 18px", fontSize: "13px", fontWeight: "500", cursor: "pointer", fontFamily: "Inter, sans-serif", background: inputMode === m.key ? BLUE : GRAY_100, color: inputMode === m.key ? WHITE : GRAY_600, border: "none", borderRadius: "8px", transition: "all 0.15s", display: "flex", alignItems: "center", gap: "7px" }}>
+                  <button key={m.key} onClick={() => setInputMode(m.key)} style={{ padding: "8px 18px", fontSize: "13px", fontWeight: "500", cursor: "pointer", fontFamily: "Inter, sans-serif", background: inputMode === m.key ? BLUE : GRAY_100, color: inputMode === m.key ? WHITE : GRAY_600, border: "none", borderRadius: "8px", display: "flex", alignItems: "center", gap: "7px" }}>
                     <i className={"fa-solid " + m.icon} style={{ fontSize: "12px" }} /> {m.label}
                   </button>
                 ))}
-                <button onClick={() => setNotes(sampleNotes)} style={{ marginLeft: "auto", padding: "8px 14px", fontSize: "12px", fontWeight: "500", cursor: "pointer", fontFamily: "Inter, sans-serif", background: "transparent", color: GRAY_400, border: "1px solid " + GRAY_200, borderRadius: "8px", display: "flex", alignItems: "center", gap: "6px", transition: "all 0.15s" }}>
+                <button onClick={() => setNotes(sampleNotes)} style={{ marginLeft: "auto", padding: "8px 14px", fontSize: "12px", fontWeight: "500", cursor: "pointer", fontFamily: "Inter, sans-serif", background: "transparent", color: GRAY_400, border: "1px solid " + GRAY_200, borderRadius: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
                   <i className="fa-solid fa-wand-magic-sparkles" style={{ fontSize: "11px" }} /> Sample
                 </button>
               </div>
@@ -240,7 +230,7 @@
               {inputMode === "text" && (
                 <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
                   placeholder="e.g. Met with the Johnsons today, reviewed their portfolio allocation, discussed upcoming retirement timeline..."
-                  style={{ width: "100%", minHeight: "160px", background: GRAY_50, border: "1.5px solid " + GRAY_200, borderRadius: "10px", padding: "14px 16px", color: GRAY_800, fontSize: "14px", lineHeight: "1.7", fontFamily: "Inter, sans-serif", resize: "vertical", transition: "border-color 0.2s, box-shadow 0.2s" }}
+                  style={{ width: "100%", minHeight: "160px", background: GRAY_50, border: "1.5px solid " + GRAY_200, borderRadius: "10px", padding: "14px 16px", color: GRAY_800, fontSize: "14px", lineHeight: "1.7", fontFamily: "Inter, sans-serif", resize: "vertical" }}
                 />
               )}
 
@@ -251,12 +241,12 @@
                       onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                       onDragLeave={() => setDragOver(false)}
                       onDrop={(e) => { e.preventDefault(); setDragOver(false); handleImageFile(e.dataTransfer.files[0]); }}
-                      style={{ border: "2px dashed " + (dragOver ? BLUE : GRAY_200), borderRadius: "10px", padding: "40px 24px", textAlign: "center", cursor: "pointer", background: dragOver ? BLUE_LIGHT : GRAY_50, transition: "all 0.2s" }}>
+                      style={{ border: "2px dashed " + (dragOver ? BLUE : GRAY_200), borderRadius: "10px", padding: "40px 24px", textAlign: "center", cursor: "pointer", background: dragOver ? BLUE_LIGHT : GRAY_50 }}>
                       <div style={{ width: "48px", height: "48px", background: BLUE_LIGHT, borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
                         <i className="fa-solid fa-camera" style={{ fontSize: "20px", color: BLUE }} />
                       </div>
                       <div style={{ fontSize: "15px", fontWeight: "600", color: GRAY_800, marginBottom: "4px" }}>Upload handwritten notes</div>
-                      <div style={{ fontSize: "13px", color: GRAY_400 }}>Click to browse or drag and drop — JPG, PNG</div>
+                      <div style={{ fontSize: "13px", color: GRAY_400 }}>Click to browse or drag and drop</div>
                       <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => handleImageFile(e.target.files[0])} />
                     </div>
                   ) : (
@@ -270,15 +260,13 @@
                 </div>
               )}
 
-              {/* Footer row */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "16px", gap: "12px" }}>
-                <button onClick={() => setShowDriveModal(true)} style={{ fontSize: "13px", fontWeight: "500", color: driveToken ? SUCCESS : GRAY_400, background: "transparent", border: "1px solid " + (driveToken ? SUCCESS_BORDER : GRAY_200), borderRadius: "8px", padding: "7px 14px", cursor: "pointer", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", gap: "6px", transition: "all 0.15s" }}>
-                  <i className={"fa-brands fa-google-drive"} style={{ fontSize: "13px" }} />
+                <button onClick={() => setShowDriveModal(true)} style={{ fontSize: "13px", fontWeight: "500", color: driveToken ? SUCCESS : GRAY_400, background: "transparent", border: "1px solid " + (driveToken ? SUCCESS_BORDER : GRAY_200), borderRadius: "8px", padding: "7px 14px", cursor: "pointer", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <i className="fa-brands fa-google-drive" style={{ fontSize: "13px" }} />
                   {driveToken ? "Drive Connected" : "Connect Drive"}
                 </button>
-
                 <button onClick={processNotes} disabled={loading || !canSubmit}
-                  style={{ background: loading || !canSubmit ? GRAY_200 : "linear-gradient(135deg, " + BLUE + " 0%, " + BLUE_MID + " 100%)", color: loading || !canSubmit ? GRAY_400 : WHITE, border: "none", borderRadius: "10px", padding: "11px 28px", fontSize: "14px", fontWeight: "600", cursor: loading || !canSubmit ? "not-allowed" : "pointer", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", gap: "8px", boxShadow: loading || !canSubmit ? "none" : "0 4px 12px rgba(26,86,219,0.3)", transition: "all 0.2s" }}>
+                  style={{ background: loading || !canSubmit ? GRAY_200 : "linear-gradient(135deg, " + BLUE + " 0%, " + BLUE_MID + " 100%)", color: loading || !canSubmit ? GRAY_400 : WHITE, border: "none", borderRadius: "10px", padding: "11px 28px", fontSize: "14px", fontWeight: "600", cursor: loading || !canSubmit ? "not-allowed" : "pointer", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", gap: "8px", boxShadow: loading || !canSubmit ? "none" : "0 4px 12px rgba(28,85,130,0.3)" }}>
                   {loading ? <><i className="fa-solid fa-spinner fa-spin" /> Processing...</> : <><i className="fa-solid fa-bolt" /> Generate Documents</>}
                 </button>
               </div>
@@ -293,16 +281,14 @@
             {driveStatus && (
               <div style={{ background: driveStatus === "saved" ? SUCCESS_BG : driveStatus === "saving" ? BLUE_LIGHT : ERROR_BG, border: "1px solid " + (driveStatus === "saved" ? SUCCESS_BORDER : driveStatus === "saving" ? "#bfdbfe" : ERROR_BORDER), borderRadius: "12px", padding: "12px 18px", fontSize: "13px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px", color: driveStatus === "saved" ? SUCCESS : driveStatus === "saving" ? BLUE : ERROR_TEXT }}>
                 {driveStatus === "saving" && <><i className="fa-solid fa-spinner fa-spin" /> Archiving to Google Drive...</>}
-                {driveStatus === "saved" && <><i className="fa-solid fa-circle-check" /> Archived to Drive — <a href={driveLink} target="_blank" rel="noreferrer" style={{ color: BLUE, fontWeight: "600", textDecoration: "none" }}>View file</a></>}
+                {driveStatus === "saved" && <><i className="fa-solid fa-circle-check" /> Archived to Drive - <a href={driveLink} target="_blank" rel="noreferrer" style={{ color: BLUE, fontWeight: "600", textDecoration: "none" }}>View file</a></>}
                 {driveStatus === "error" && <><i className="fa-solid fa-triangle-exclamation" /> Could not save to Google Drive</>}
               </div>
             )}
 
-            {/* Results Card */}
             {result && (
               <div className="fade-in" style={{ ...card }}>
 
-                {/* Client info bar */}
                 <div style={{ padding: "16px 24px", borderBottom: "1px solid " + GRAY_200, display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap" }}>
                   {result.clientName && (
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -325,95 +311,94 @@
                   )}
                 </div>
 
-                {/* Tabs */}
-                <div style={{ display: "flex", padding: "0 24px", borderBottom: "1px solid " + GRAY_200, overflowX: "auto", gap: "4px" }}>
+                <div style={{ padding: "16px 24px 0", display: "flex", gap: "8px", flexWrap: "wrap" }}>
                   {tabs.map((tab) => (
                     <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-                      style={{ padding: "14px 16px", fontSize: "13px", fontWeight: activeTab === tab.key ? "600" : "500", background: "transparent", border: "none", borderBottom: activeTab === tab.key ? "2px solid " + BLUE : "2px solid transparent", color: activeTab === tab.key ? BLUE : GRAY_400, cursor: "pointer", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", gap: "7px", whiteSpace: "nowrap", transition: "all 0.15s", marginBottom: "-1px" }}>
+                      style={{ padding: "10px 20px", fontSize: "13px", fontWeight: "500", background: activeTab === tab.key ? BLUE : GRAY_100, color: activeTab === tab.key ? WHITE : GRAY_600, border: activeTab === tab.key ? "none" : "1px solid " + GRAY_200, borderRadius: "10px", cursor: "pointer", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", gap: "7px", whiteSpace: "nowrap", boxShadow: activeTab === tab.key ? "0 4px 12px rgba(28,85,130,0.25)" : "none" }}>
                       <i className={"fa-solid " + tab.icon} style={{ fontSize: "12px" }} /> {tab.label}
                       {tab.key === "compliance" && result.complianceFlags && result.complianceFlags.length > 0 && (
-                        <span style={{ background: "#fef2f2", color: "#dc2626", fontSize: "10px", fontWeight: "700", padding: "1px 7px", borderRadius: "20px" }}>{result.complianceFlags.length}</span>
+                        <span style={{ background: activeTab === tab.key ? "rgba(255,255,255,0.25)" : "#fef2f2", color: activeTab === tab.key ? WHITE : "#dc2626", fontSize: "10px", fontWeight: "700", padding: "1px 7px", borderRadius: "20px" }}>{result.complianceFlags.length}</span>
                       )}
                     </button>
                   ))}
                 </div>
 
-                {/* Tab content */}
                 <div style={{ padding: "24px" }}>
+                  <div key={activeTab} className="tab-panel">
 
-                  {activeTab === "letter" && (
-                    <div>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                        <div style={{ fontSize: "12px", fontWeight: "600", color: GRAY_400, letterSpacing: "0.08em", textTransform: "uppercase" }}>Client Follow-Up Letter</div>
-                        <button onClick={() => copy(result.clientLetter, "letter")} style={{ fontSize: "12px", fontWeight: "500", color: copied === "letter" ? SUCCESS : BLUE, background: copied === "letter" ? SUCCESS_BG : BLUE_LIGHT, border: "none", borderRadius: "7px", padding: "5px 12px", cursor: "pointer", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", gap: "5px" }}>
-                          <i className={"fa-solid " + (copied === "letter" ? "fa-check" : "fa-copy")} style={{ fontSize: "11px" }} /> {copied === "letter" ? "Copied!" : "Copy"}
-                        </button>
+                    {activeTab === "letter" && (
+                      <div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                          <div style={{ fontSize: "12px", fontWeight: "600", color: GRAY_400, letterSpacing: "0.08em", textTransform: "uppercase" }}>Client Follow-Up Letter</div>
+                          <button onClick={() => copy(result.clientLetter, "letter")} style={{ fontSize: "12px", fontWeight: "500", color: copied === "letter" ? SUCCESS : BLUE, background: copied === "letter" ? SUCCESS_BG : BLUE_LIGHT, border: "none", borderRadius: "7px", padding: "5px 12px", cursor: "pointer", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", gap: "5px" }}>
+                            <i className={"fa-solid " + (copied === "letter" ? "fa-check" : "fa-copy")} style={{ fontSize: "11px" }} /> {copied === "letter" ? "Copied!" : "Copy"}
+                          </button>
+                        </div>
+                        <div style={{ fontSize: "14px", lineHeight: "1.9", color: GRAY_600, whiteSpace: "pre-wrap", borderLeft: "3px solid " + BLUE_MID, paddingLeft: "18px" }}>{result.clientLetter}</div>
                       </div>
-                      <div style={{ fontSize: "14px", lineHeight: "1.9", color: GRAY_600, whiteSpace: "pre-wrap", borderLeft: "3px solid " + BLUE_MID, paddingLeft: "18px" }}>{result.clientLetter}</div>
-                    </div>
-                  )}
+                    )}
 
-                  {activeTab === "crm" && (
-                    <div>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                        <div style={{ fontSize: "12px", fontWeight: "600", color: GRAY_400, letterSpacing: "0.08em", textTransform: "uppercase" }}>Internal CRM Notes</div>
-                        <button onClick={() => copy(result.crmNotes, "crm")} style={{ fontSize: "12px", fontWeight: "500", color: copied === "crm" ? SUCCESS : BLUE, background: copied === "crm" ? SUCCESS_BG : BLUE_LIGHT, border: "none", borderRadius: "7px", padding: "5px 12px", cursor: "pointer", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", gap: "5px" }}>
-                          <i className={"fa-solid " + (copied === "crm" ? "fa-check" : "fa-copy")} style={{ fontSize: "11px" }} /> {copied === "crm" ? "Copied!" : "Copy"}
-                        </button>
+                    {activeTab === "crm" && (
+                      <div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                          <div style={{ fontSize: "12px", fontWeight: "600", color: GRAY_400, letterSpacing: "0.08em", textTransform: "uppercase" }}>Internal CRM Notes</div>
+                          <button onClick={() => copy(result.crmNotes, "crm")} style={{ fontSize: "12px", fontWeight: "500", color: copied === "crm" ? SUCCESS : BLUE, background: copied === "crm" ? SUCCESS_BG : BLUE_LIGHT, border: "none", borderRadius: "7px", padding: "5px 12px", cursor: "pointer", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", gap: "5px" }}>
+                            <i className={"fa-solid " + (copied === "crm" ? "fa-check" : "fa-copy")} style={{ fontSize: "11px" }} /> {copied === "crm" ? "Copied!" : "Copy"}
+                          </button>
+                        </div>
+                        <div style={{ fontSize: "14px", lineHeight: "1.8", color: GRAY_600, whiteSpace: "pre-wrap", background: GRAY_50, borderRadius: "10px", padding: "16px" }}>{result.crmNotes}</div>
                       </div>
-                      <div style={{ fontSize: "14px", lineHeight: "1.8", color: GRAY_600, whiteSpace: "pre-wrap", background: GRAY_50, borderRadius: "10px", padding: "16px" }}>{result.crmNotes}</div>
-                    </div>
-                  )}
+                    )}
 
-                  {activeTab === "actions" && (
-                    <div>
-                      <div style={{ fontSize: "12px", fontWeight: "600", color: GRAY_400, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "16px" }}>Action Items</div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                        {(result.actionItems || []).map((item, i) => {
-                          const pColor = item.priority === "High" ? "#dc2626" : item.priority === "Medium" ? BLUE : SUCCESS;
-                          const pBg = item.priority === "High" ? "#fef2f2" : item.priority === "Medium" ? BLUE_LIGHT : SUCCESS_BG;
-                          return (
-                            <div key={i} style={{ display: "flex", gap: "14px", background: GRAY_50, borderRadius: "10px", padding: "14px 16px", border: "1px solid " + GRAY_200 }}>
-                              <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: pColor, marginTop: "6px", flexShrink: 0 }} />
-                              <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: "14px", color: GRAY_800, marginBottom: "8px", fontWeight: "500" }}>{item.task}</div>
-                                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                                  <Badge color={GRAY_600} bg={GRAY_200}><i className="fa-solid fa-user" style={{ marginRight: "4px", fontSize: "10px" }} />{item.owner}</Badge>
-                                  <Badge color={pColor} bg={pBg}>{item.priority}</Badge>
+                    {activeTab === "actions" && (
+                      <div>
+                        <div style={{ fontSize: "12px", fontWeight: "600", color: GRAY_400, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "16px" }}>Action Items</div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                          {(result.actionItems || []).map((item, i) => {
+                            const pColor = item.priority === "High" ? "#dc2626" : item.priority === "Medium" ? BLUE : SUCCESS;
+                            const pBg = item.priority === "High" ? "#fef2f2" : item.priority === "Medium" ? BLUE_LIGHT : SUCCESS_BG;
+                            return (
+                              <div key={i} style={{ display: "flex", gap: "14px", background: GRAY_50, borderRadius: "10px", padding: "14px 16px", border: "1px solid " + GRAY_200 }}>
+                                <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: pColor, marginTop: "6px", flexShrink: 0 }} />
+                                <div style={{ flex: 1 }}>
+                                  <div style={{ fontSize: "14px", color: GRAY_800, marginBottom: "8px", fontWeight: "500" }}>{item.task}</div>
+                                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                                    <Badge color={GRAY_600} bg={GRAY_200}><i className="fa-solid fa-user" style={{ marginRight: "4px", fontSize: "10px" }} />{item.owner}</Badge>
+                                    <Badge color={pColor} bg={pBg}>{item.priority}</Badge>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {activeTab === "compliance" && (
-                    <div>
-                      <div style={{ fontSize: "12px", fontWeight: "600", color: GRAY_400, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "16px" }}>Compliance Review Flags</div>
-                      {(!result.complianceFlags || result.complianceFlags.length === 0) ? (
-                        <div style={{ background: SUCCESS_BG, border: "1px solid " + SUCCESS_BORDER, borderRadius: "10px", padding: "16px", fontSize: "14px", color: SUCCESS, display: "flex", alignItems: "center", gap: "10px" }}>
-                          <i className="fa-solid fa-circle-check" /> No compliance flags detected in these notes
-                        </div>
-                      ) : (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                          {result.complianceFlags.map((flag, i) => (
-                            <div key={i} style={{ background: WARN_BG, border: "1px solid " + WARN_BORDER, borderRadius: "10px", padding: "14px 16px", fontSize: "14px", color: WARN_TEXT, display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                              <i className="fa-solid fa-triangle-exclamation" style={{ marginTop: "2px", flexShrink: 0 }} /> {flag}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                    {activeTab === "compliance" && (
+                      <div>
+                        <div style={{ fontSize: "12px", fontWeight: "600", color: GRAY_400, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "16px" }}>Compliance Review Flags</div>
+                        {(!result.complianceFlags || result.complianceFlags.length === 0) ? (
+                          <div style={{ background: SUCCESS_BG, border: "1px solid " + SUCCESS_BORDER, borderRadius: "10px", padding: "16px", fontSize: "14px", color: SUCCESS, display: "flex", alignItems: "center", gap: "10px" }}>
+                            <i className="fa-solid fa-circle-check" /> No compliance flags detected
+                          </div>
+                        ) : (
+                          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                            {result.complianceFlags.map((flag, i) => (
+                              <div key={i} style={{ background: WARN_BG, border: "1px solid " + WARN_BORDER, borderRadius: "10px", padding: "14px 16px", fontSize: "14px", color: WARN_TEXT, display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                                <i className="fa-solid fa-triangle-exclamation" style={{ marginTop: "2px", flexShrink: 0 }} /> {flag}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
 
+                  </div>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Drive Modal */}
           {showDriveModal && (
             <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "24px" }} onClick={() => setShowDriveModal(false)}>
               <div style={{ ...card, padding: "28px", maxWidth: "480px", width: "100%" }} onClick={(e) => e.stopPropagation()}>
@@ -428,7 +413,6 @@
                     <i className="fa-solid fa-xmark" />
                   </button>
                 </div>
-
                 {driveToken ? (
                   <div style={{ background: SUCCESS_BG, border: "1px solid " + SUCCESS_BORDER, borderRadius: "10px", padding: "14px 16px", fontSize: "14px", color: SUCCESS, display: "flex", alignItems: "center", gap: "8px" }}>
                     <i className="fa-solid fa-circle-check" /> Google Drive is connected. Notes will auto-archive after each session.
@@ -441,8 +425,8 @@
                     <p style={{ fontSize: "12px", color: GRAY_400, marginBottom: "12px" }}>
                       Requires a Google OAuth Client ID from <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer" style={{ color: BLUE }}>Google Cloud Console</a>.
                     </p>
-                    <input value={clientGoogleId} onChange={(e) => setClientGoogleId(e.target.value)} placeholder="Paste your Google OAuth Client ID..." style={{ width: "100%", background: GRAY_50, border: "1.5px solid " + GRAY_200, borderRadius: "8px", padding: "10px 14px", fontSize: "13px", fontFamily: "monospace", marginBottom: "12px", transition: "border-color 0.2s, box-shadow 0.2s" }} />
-                    <button onClick={connectDrive} style={{ width: "100%", background: "linear-gradient(135deg, " + BLUE + " 0%, " + BLUE_MID + " 100%)", color: WHITE, border: "none", borderRadius: "10px", padding: "11px", fontSize: "14px", fontWeight: "600", cursor: "pointer", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "0 4px 12px rgba(26,86,219,0.3)" }}>
+                    <input value={clientGoogleId} onChange={(e) => setClientGoogleId(e.target.value)} placeholder="Paste your Google OAuth Client ID..." style={{ width: "100%", background: GRAY_50, border: "1.5px solid " + GRAY_200, borderRadius: "8px", padding: "10px 14px", fontSize: "13px", fontFamily: "monospace", marginBottom: "12px" }} />
+                    <button onClick={connectDrive} style={{ width: "100%", background: "linear-gradient(135deg, " + BLUE + " 0%, " + BLUE_MID + " 100%)", color: WHITE, border: "none", borderRadius: "10px", padding: "11px", fontSize: "14px", fontWeight: "600", cursor: "pointer", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", boxShadow: "0 4px 12px rgba(28,85,130,0.3)" }}>
                       <i className="fa-brands fa-google" /> Authorize with Google
                     </button>
                   </div>
